@@ -1,7 +1,7 @@
 {
 	"id": "novelaid-tools",
 	"name": "Novelaid Tools",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"minAppVersion": "0.15.0",
 	"description": "小説の執筆を支援するツール",
 	"author": "Mituha Mizuki",
