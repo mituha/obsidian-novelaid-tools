@@ -12,22 +12,10 @@ export default class NovelaidToolsPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
-
 		// Add a ribbon icon for the chat view
 		this.addRibbonIcon('message-square', 'AI Chat', () => {
-			this.activateView();
+			this.activateChatView();
 		});
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new NovelaidToolsSettingsTab(this.app, this));
@@ -44,7 +32,7 @@ export default class NovelaidToolsPlugin extends Plugin {
 		});
 	}
 
-	async activateView() {
+	async activateChatView() {
 		this.app.workspace.detachLeavesOfType(CHAT_VIEW_TYPE);
 
 		await this.app.workspace.getRightLeaf(false)?.setViewState({
