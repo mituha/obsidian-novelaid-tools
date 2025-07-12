@@ -66,12 +66,31 @@ export class ChatView extends ItemView {
 
 
         try {
-            const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
+
+            //メイン領域のマークダウンの内容を取得します。
+            //チャットタブからはgetActiveViewOfType(MarkdownView)が取得できないため、全てのマークダウンビューを取得して、最初のものを使用します。
+            const allMarkdownLeaves: WorkspaceLeaf[] = this.app.workspace.getLeavesOfType('markdown');
+            console.log('All Markdown leaves:', allMarkdownLeaves);
+
+            //全てのマークダウンビューから最初のものを取得
+            const firstMarkdownView = allMarkdownLeaves[0]?.view as MarkdownView | undefined;
+            if (firstMarkdownView) {
+                console.log('Using first Markdown view found.');
+            } else {
+                console.warn('No Markdown view found.');
+            }
+            //TODO 複数やフォルダー内のすべての内容からの取得等。
+            const activeView = firstMarkdownView || this.app.workspace.getActiveViewOfType(MarkdownView);
+            //activeViewが取得されているか等をログ出力
+            console.log('Active view:', activeView);
+            if (activeView) {
+                console.log('Active Markdown view found.');
+                console.log('Editor content:', activeView.editor.getValue());
+            }
             const editorContent = activeView ? activeView.editor.getValue() : '';
 
             const response = await generateChatResponse(message, editorContent);
             this.updateMessage(thinkingMessage, response, 'assistant');
-
         } catch (error) {
             console.error('Error getting AI response:', error);
             this.updateMessage(thinkingMessage, `エラーが発生しました: ${error.message}`, 'assistant-error');
