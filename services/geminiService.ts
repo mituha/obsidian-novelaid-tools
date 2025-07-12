@@ -28,3 +28,33 @@ const checkApiKey = (): boolean => {
     }
     return true;
 };
+
+export const generateChatResponse = async (userInput: string, context: string): Promise<string> => {
+    if (!checkApiKey() || !ai) {
+        throw new Error(API_KEY_ERROR_MESSAGE);
+    }
+
+    const prompt = `あなたは優秀な文章アシスタントです。
+ユーザーは以下の文章を編集中です
+
+---
+${context}
+---
+
+この文脈を踏まえて、ユーザーの次の質問に日本語で回答してください。
+
+質問: "${userInput}"
+`;
+
+    try {
+        const result = await ai.models.generateContent({
+            model: GEMINI_TEXT_MODEL,
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+        });
+        const response = result.text;
+        return response || "AIからの応答が得られませんでした。";
+    } catch (error) {
+        console.error("Error generating chat response from Gemini:", error);
+        throw new Error("AIからの応答の生成に失敗しました。");
+    }
+};

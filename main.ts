@@ -4,6 +4,7 @@ import { NovelaidToolsPluginSettings, DEFAULT_SETTINGS } from './novelaidToolsSe
 import { NovelaidToolsSettingsTab } from './novelaidToolsSettingsTab';
 import * as path from 'path';
 import { applyRubyToElement } from './services/rubyTextFormatter';
+import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
 
 export default class NovelaidToolsPlugin extends Plugin {
 	settings: NovelaidToolsPluginSettings;
@@ -19,6 +20,11 @@ export default class NovelaidToolsPlugin extends Plugin {
 		// Perform additional things with the ribbon
 		ribbonIconEl.addClass('my-plugin-ribbon-class');
 
+		// Add a ribbon icon for the chat view
+		this.addRibbonIcon('message-square', 'AI Chat', () => {
+			this.activateView();
+		});
+
 		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
 		const statusBarItemEl = this.addStatusBarItem();
 		statusBarItemEl.setText('Status Bar Text');
@@ -26,14 +32,33 @@ export default class NovelaidToolsPlugin extends Plugin {
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new NovelaidToolsSettingsTab(this.app, this));
 
+		// Register the view
+		this.registerView(
+			CHAT_VIEW_TYPE,
+			(leaf) => new ChatView(leaf, this.settings)
+		);
+
 		//ルビの表示
 		this.registerMarkdownPostProcessor((element, context) => {
 			applyRubyToElement(element);
 		});
 	}
 
-	onunload() {
+	async activateView() {
+		this.app.workspace.detachLeavesOfType(CHAT_VIEW_TYPE);
 
+		await this.app.workspace.getRightLeaf(false)?.setViewState({
+			type: CHAT_VIEW_TYPE,
+			active: true,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(CHAT_VIEW_TYPE)[0]
+		);
+	}
+
+	onunload() {
+		this.app.workspace.detachLeavesOfType(CHAT_VIEW_TYPE);
 	}
 
 	async loadSettings() {
@@ -53,5 +78,6 @@ export default class NovelaidToolsPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
+
 
 
