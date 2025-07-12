@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, MarkdownView } from 'obsidian';
+import { ItemView, WorkspaceLeaf, MarkdownView, Notice } from 'obsidian';
 import { NovelaidToolsPluginSettings } from '../novelaidToolsSettings';
 import { generateChatResponse } from '../services/geminiService';
 
@@ -66,6 +66,8 @@ export class ChatView extends ItemView {
 
 
         try {
+            document.body.style.cursor = 'wait';
+            const notice = new Notice(`入力中...`);
 
             //メイン領域のマークダウンの内容を取得します。
             //チャットタブからはgetActiveViewOfType(MarkdownView)が取得できないため、全てのマークダウンビューを取得して、最初のものを使用します。
@@ -91,12 +93,16 @@ export class ChatView extends ItemView {
 
             const response = await generateChatResponse(message, editorContent);
             this.updateMessage(thinkingMessage, response, 'assistant');
+            
+            //通知を消す
+            notice.hide();
         } catch (error) {
             console.error('Error getting AI response:', error);
             this.updateMessage(thinkingMessage, `エラーが発生しました: ${error.message}`, 'assistant-error');
         } finally {
             this.inputEl.disabled = false;
             this.sendButton.disabled = false;
+            document.body.style.cursor = 'auto'; // カーソルを元に戻す 'default'では駄目っぽい
             this.inputEl.focus();
         }
     }
