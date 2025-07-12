@@ -55,3 +55,38 @@
 .input-container input {
   flex-grow: 1;
 }
+
+/* Styles for AI Review */
+.message.assistant.review-result {
+  background-color: var(--background-secondary-alt);
+  border-left: 4px solid var(--interactive-accent);
+  max-width: 95%;
+}
+
+.review-result strong {
+  display: block;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 1.1em;
+}
+
+.review-result ul {
+  margin-left: 20px;
+  padding-left: 0;
+}
+
+.review-result p {
+  margin-top: 4px;
+}
+
+.review-rating {
+  font-size: 1.2em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.review-star svg {
+  fill: var(--interactive-accent);
+  color: var(--interactive-accent); /* Ensure icon color is set */
+}
