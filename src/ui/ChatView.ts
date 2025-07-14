@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, MarkdownView, Notice, setIcon, MarkdownRenderer } from 'obsidian';
+import { ItemView, WorkspaceLeaf, MarkdownView, Notice, setIcon, MarkdownRenderer, IconName } from 'obsidian';
 import { NovelaidToolsPluginSettings } from '../novelaidToolsSettings';
 import { generateChatResponse, generateReview } from '../services/geminiService';
 
@@ -28,18 +28,18 @@ export class ChatView extends ItemView {
     }
 
     async onOpen() {
-        const container = this.containerEl.children[1];
+        this.initNavButtons();
+
+        //const container = this.containerEl.children[1];
+        //view-containerを探す
+        const container = this.containerEl.querySelector('.view-content');
+        if (container === null) {
+            console.error("view-containerが見つかりません。");
+            return;
+        }
         container.empty();
         container.addClass('novelaid-chat-view-container');
 
-        //右側のペインではヘッダー表示が無効なため、表示されない。
-        // 内部的には存在するが、非表示にされている。
-        this.addAction(
-            'star',
-            'AIレビューを実行',
-            (evt) => this.runReview()
-        );
-        this.addNavButtons();
 
         this.messagesContainer = container.createEl('div');
         this.messagesContainer.addClass('messages-container');
@@ -58,18 +58,56 @@ export class ChatView extends ItemView {
         this.sendButton.addEventListener('click', () => {
             this.sendMessage();
         });
+
+        //containerElの確認
+        console.log('containerEl:', this.containerEl);
     }
-    private addNavButtons(): void {
-        //TODO addActionで追加されている要素をコピーして追加する構造にしたい。
-        const navHeader = this.contentEl.createDiv("nav-header");
-        const navButContainer = navHeader.createDiv("nav-buttons-container");
-        let actionButton = navButContainer.createDiv("nav-action-button");
-        actionButton.ariaLabel = "AIレビューを実行";
-        setIcon(actionButton, "star");
-        actionButton.addEventListener("click", (evt) => {
-            this.runReview();
-        });
+    private initNavButtons(): void {
+        console.log('initNavButtons() called');
+        console.log('this.containerEl:', this.containerEl);
+
+        // nav-buttons-container
+        const navButtonsContainer = this.getNavButtonsContainer();
+        if (navButtonsContainer === null) { console.error("nav-buttons-containerが見つかりません。") };
+        console.log('this.containerEl:', this.containerEl);
+
+        //追加する前にクリア
+        navButtonsContainer.empty();
+
+        console.log('this.containerEl:', this.containerEl);
+
+        //右側のペインではヘッダー表示が無効なため、表示されない。
+        // 内部的には存在するが、非表示にされている。
+        this.addNavAction('star', 'AIレビューを実行', (evt) => this.runReview());
     }
+    private getNavButtonsContainer(): Element {
+        // nav-header
+        const navHeader = this.containerEl.querySelector('.nav-header') ?? this.containerEl.createDiv("nav-header");
+        if (navHeader === null) { console.error("nav-headerが見つかりません。") };
+        const viewHeader = this.containerEl.querySelector('.view-header')
+        if (viewHeader === null) { console.error("view-headerが見つかりません。") };
+        if(viewHeader){
+            //順序の調整
+            this.containerEl.insertBefore(navHeader, viewHeader);
+        }
+        console.log('navHeader:', navHeader);
+        console.log('this.containerEl:', this.containerEl);
+        // nav-buttons-container
+        const navButtonsContainer = navHeader.querySelector('.nav-buttons-container') ?? navHeader.createDiv("nav-buttons-container");
+        if (navButtonsContainer === null) { console.error("nav-buttons-containerが見つかりません。") };
+        console.log('navButtonsContainer:', navButtonsContainer);
+        return navButtonsContainer;
+    }
+    private addNavAction(icon: IconName, title: string, callback: (evt: MouseEvent) => any): HTMLElement {
+        const navButtonsContainer = this.getNavButtonsContainer();
+
+        let actionButton = navButtonsContainer.createDiv("nav-action-button");
+        actionButton.ariaLabel = title;
+        setIcon(actionButton, icon);
+        actionButton.addEventListener("click", callback);
+        return actionButton;
+    }
+
     private getCurrentContext(): string {
         const allMarkdownLeaves: WorkspaceLeaf[] = this.app.workspace.getLeavesOfType('markdown');
         const firstMarkdownView = allMarkdownLeaves[0]?.view as MarkdownView | undefined;
