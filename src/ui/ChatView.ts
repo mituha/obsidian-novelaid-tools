@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf, MarkdownView, Notice, setIcon, MarkdownRenderer, IconName } from 'obsidian';
 import { NovelaidToolsPluginSettings } from '../novelaidToolsSettings';
-import { generateChatResponse, generateReview } from '../services/geminiService';
+import { generateChatResponse, generateReview, generateProofread, ProofreadResult } from '../services/geminiService';
 
 export const CHAT_VIEW_TYPE = 'novelaid-chat-view';
 
@@ -79,6 +79,7 @@ export class ChatView extends ItemView {
         //右側のペインではヘッダー表示が無効なため、表示されない。
         // 内部的には存在するが、非表示にされている。
         this.addNavAction('star', 'AIレビューを実行', (evt) => this.runReview());
+        this.addNavAction('check-check', 'AI校正を実行', (evt) => this.runProofread());
     }
     private getNavButtonsContainer(): Element {
         // nav-header
@@ -113,6 +114,41 @@ export class ChatView extends ItemView {
         const firstMarkdownView = allMarkdownLeaves[0]?.view as MarkdownView | undefined;
         const activeView = firstMarkdownView || this.app.workspace.getActiveViewOfType(MarkdownView);
         return activeView ? activeView.editor.getValue() : '';
+    }
+
+    async runProofread() {
+        this.addMessage('AI校正を開始します...', 'assistant');
+        this.inputEl.disabled = true;
+        this.sendButton.disabled = true;
+
+        const thinkingMessage = this.addMessage('校正中...', 'assistant');
+        thinkingMessage.addClass('streaming');
+
+        try {
+            document.body.style.cursor = 'wait';
+            const notice = new Notice(`AIが校正中です...`, 0);
+
+            const editorContent = this.getCurrentContext();
+            if (!editorContent.trim()) {
+                this.updateMessage(thinkingMessage, '校正対象の文章がありません。', 'assistant-error');
+                notice.hide();
+                return;
+            }
+
+            const results = await generateProofread(editorContent);
+            this.messagesContainer.removeChild(thinkingMessage);
+            this.displayProofreadResult(results);
+            notice.hide();
+
+        } catch (error) {
+            console.error('Error getting AI proofread:', error);
+            this.updateMessage(thinkingMessage, `校正結果の取得中にエラーが発生しました: ${error.message}`, 'assistant-error');
+        } finally {
+            this.inputEl.disabled = false;
+            this.sendButton.disabled = false;
+            document.body.style.cursor = 'auto';
+            this.inputEl.focus();
+        }
     }
 
     async runReview() {
@@ -180,6 +216,38 @@ export class ChatView extends ItemView {
             document.body.style.cursor = 'auto';
             this.inputEl.focus();
         }
+    }
+
+    private displayProofreadResult(results: ProofreadResult[]) {
+        const resultContainer = this.messagesContainer.createEl('div', {
+            cls: 'message assistant proofread-result',
+        });
+
+        if (results.length === 0) {
+            resultContainer.createEl('p', { text: 'AIによる校正の結果、修正すべき点はありませんでした。' });
+            this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+            return;
+        }
+
+        resultContainer.createEl('strong', { text: 'AIによる校正結果' });
+
+        const table = resultContainer.createEl('table', { cls: 'proofread-table' });
+        const thead = table.createEl('thead');
+        const tbody = table.createEl('tbody');
+
+        const headerRow = thead.createEl('tr');
+        headerRow.createEl('th', { text: '修正前' });
+        headerRow.createEl('th', { text: '修正後' });
+        headerRow.createEl('th', { text: '修正理由' });
+
+        for (const result of results) {
+            const row = tbody.createEl('tr');
+            row.createEl('td', { text: result.before });
+            row.createEl('td', { text: result.after });
+            row.createEl('td', { text: result.reason });
+        }
+
+        this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
     }
 
     private displayReview(reviewText: string) {
