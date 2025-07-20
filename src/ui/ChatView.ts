@@ -109,6 +109,22 @@ export class ChatView extends ItemView {
         return actionButton;
     }
 
+    /**
+     * 現在編集中のMarkdownファイルの内容を取得する関数。
+     *
+     * 1. すべてのMarkdownリーフ（タブ）を取得し、最初のものを優先的に参照。
+     * 2. 取得できない場合はアクティブなMarkdownViewを参照。
+     * 3. editor（エディタインスタンス）が取得できれば、その内容（getValue）を返す。
+     * 4. editorが取得できない場合は、activeViewのdataプロパティ（プレビュー時など）から内容を取得。
+     * 5. どちらも取得できなければ空文字列を返す。
+     *
+     * 環境やObsidianの状態によってeditorが取得できない場合があるため、
+     * その場合も可能な限り現在のMarkdown内容を返すように工夫している。
+     * editorが取得できない場合としてピン留めされているタブが含まれていた。
+     * また、同一のファイルをピン留め有無で２つのタブで開いていた。
+     * 何が原因だったかは不明。
+     * TODO このメソッドはもう少し整頓してまとめる。
+     */
     private getCurrentContext(): string {
         const allMarkdownLeaves: WorkspaceLeaf[] = this.app.workspace.getLeavesOfType('markdown');
         console.log('allMarkdownLeaves:', allMarkdownLeaves);
@@ -117,7 +133,12 @@ export class ChatView extends ItemView {
         const activeView = firstMarkdownView || this.app.workspace.getActiveViewOfType(MarkdownView);
         console.log('activeView:', activeView);
         //acitveViewまでは取れるが、editoが取れなくなっている？
+        //環境による？　別な保管庫ではそのまま取れた。
         const editor = activeView?.editor;
+        console.log('activeView?.currentMode:', activeView?.currentMode);
+        console.log('activeView?.editor:', activeView?.editor);
+        console.log('activeView?.file:', activeView?.file);
+        console.log('activeView?.previewMode:', activeView?.previewMode);
         console.log('editor:', editor);
         if (editor) {
             return editor.getValue();
