@@ -87,7 +87,7 @@ export class ChatView extends ItemView {
         if (navHeader === null) { console.error("nav-headerが見つかりません。") };
         const viewHeader = this.containerEl.querySelector('.view-header')
         if (viewHeader === null) { console.error("view-headerが見つかりません。") };
-        if(viewHeader){
+        if (viewHeader) {
             //順序の調整
             this.containerEl.insertBefore(navHeader, viewHeader);
         }
@@ -111,9 +111,21 @@ export class ChatView extends ItemView {
 
     private getCurrentContext(): string {
         const allMarkdownLeaves: WorkspaceLeaf[] = this.app.workspace.getLeavesOfType('markdown');
+        console.log('allMarkdownLeaves:', allMarkdownLeaves);
         const firstMarkdownView = allMarkdownLeaves[0]?.view as MarkdownView | undefined;
+        console.log('firstMarkdownView:', firstMarkdownView);
         const activeView = firstMarkdownView || this.app.workspace.getActiveViewOfType(MarkdownView);
-        return activeView ? activeView.editor.getValue() : '';
+        console.log('activeView:', activeView);
+        //acitveViewまでは取れるが、editoが取れなくなっている？
+        const editor = activeView?.editor;
+        console.log('editor:', editor);
+        if (editor) {
+            return editor.getValue();
+        }
+        console.log('activeView?.data:', activeView?.data);
+        const editorContent = activeView?.data;
+        console.log('editorContent:', editorContent);
+        return editorContent ?? '';
     }
 
     async runProofread() {
@@ -231,20 +243,20 @@ export class ChatView extends ItemView {
 
         resultContainer.createEl('strong', { text: 'AIによる校正結果' });
 
-        const table = resultContainer.createEl('table', { cls: 'proofread-table' });
-        const thead = table.createEl('thead');
-        const tbody = table.createEl('tbody');
-
-        const headerRow = thead.createEl('tr');
-        headerRow.createEl('th', { text: '修正前' });
-        headerRow.createEl('th', { text: '修正後' });
-        headerRow.createEl('th', { text: '修正理由' });
-
         for (const result of results) {
-            const row = tbody.createEl('tr');
-            row.createEl('td', { text: result.before });
-            row.createEl('td', { text: result.after });
-            row.createEl('td', { text: result.reason });
+            const block = resultContainer.createEl('div', { cls: 'proofread-block' });
+
+            const before = block.createEl('div', { cls: 'proofread-before' });
+            before.createEl('span', { cls: 'proofread-label', text: '修正前: ' });
+            before.createEl('span', { cls: 'proofread-before-text', text: result.before });
+
+            const after = block.createEl('div', { cls: 'proofread-after' });
+            after.createEl('span', { cls: 'proofread-label', text: '修正後: ' });
+            after.createEl('span', { cls: 'proofread-after-text', text: result.after });
+
+            const reason = block.createEl('div', { cls: 'proofread-reason' });
+            reason.createEl('span', { cls: 'proofread-label', text: '理由: ' });
+            reason.createEl('span', { cls: 'proofread-reason-text', text: result.reason });
         }
 
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;

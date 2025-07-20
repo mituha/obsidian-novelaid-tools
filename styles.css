@@ -1,3 +1,33 @@
+/* 校正結果（proofread）縦並び表示用 */
+.proofread-block {
+  background: var(--background-secondary-alt);
+  border-left: 4px solid var(--color-yellow);
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.proofread-label {
+  font-weight: bold;
+  margin-right: 4px;
+}
+.proofread-before-text {
+  color: var(--text-error);
+  background: #fff3f3;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.proofread-after-text {
+  color: var(--color-green);
+  background: #f3fff3;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+.proofread-reason-text {
+  color: var(--color-accent);
+}
 /* Existing styles */
 
 /* Add styles for Chat View */
