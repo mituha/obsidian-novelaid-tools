@@ -66,6 +66,3 @@ export default class NovelaidToolsPlugin extends Plugin {
 		await this.saveData(this.settings);
 	}
 }
-
-
-
