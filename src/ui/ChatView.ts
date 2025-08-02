@@ -1,6 +1,7 @@
 import { ItemView, WorkspaceLeaf, MarkdownView, Notice, setIcon, MarkdownRenderer, IconName } from 'obsidian';
 import { NovelaidToolsPluginSettings } from '../novelaidToolsSettings';
 import { generateChatResponse, generateReview, generateProofread, ProofreadResult } from '../services/geminiService';
+import { ObsidianContextService } from '../services/obsidianContextService';
 
 export const CHAT_VIEW_TYPE = 'novelaid-chat-view';
 
@@ -9,10 +10,12 @@ export class ChatView extends ItemView {
     messagesContainer: HTMLElement;
     inputEl: HTMLInputElement;
     sendButton: HTMLButtonElement;
+    private contextService: ObsidianContextService;
 
-    constructor(leaf: WorkspaceLeaf, settings: NovelaidToolsPluginSettings) {
+    constructor(leaf: WorkspaceLeaf, settings: NovelaidToolsPluginSettings, contextService: ObsidianContextService) {
         super(leaf);
         this.settings = settings;
+        this.contextService = contextService;
     }
 
     getViewType() {
@@ -70,7 +73,7 @@ export class ChatView extends ItemView {
         const navButtonsContainer = this.getNavButtonsContainer();
         if (navButtonsContainer === null) { console.error("nav-buttons-containerが見つかりません。") };
         console.log('this.containerEl:', this.containerEl);
-
+        
         //追加する前にクリア
         navButtonsContainer.empty();
 
@@ -126,27 +129,7 @@ export class ChatView extends ItemView {
      * TODO このメソッドはもう少し整頓してまとめる。
      */
     private getCurrentContext(): string {
-        const allMarkdownLeaves: WorkspaceLeaf[] = this.app.workspace.getLeavesOfType('markdown');
-        console.log('allMarkdownLeaves:', allMarkdownLeaves);
-        const firstMarkdownView = allMarkdownLeaves[0]?.view as MarkdownView | undefined;
-        console.log('firstMarkdownView:', firstMarkdownView);
-        const activeView = firstMarkdownView || this.app.workspace.getActiveViewOfType(MarkdownView);
-        console.log('activeView:', activeView);
-        //acitveViewまでは取れるが、editoが取れなくなっている？
-        //環境による？　別な保管庫ではそのまま取れた。
-        const editor = activeView?.editor;
-        console.log('activeView?.currentMode:', activeView?.currentMode);
-        console.log('activeView?.editor:', activeView?.editor);
-        console.log('activeView?.file:', activeView?.file);
-        console.log('activeView?.previewMode:', activeView?.previewMode);
-        console.log('editor:', editor);
-        if (editor) {
-            return editor.getValue();
-        }
-        console.log('activeView?.data:', activeView?.data);
-        const editorContent = activeView?.data;
-        console.log('editorContent:', editorContent);
-        return editorContent ?? '';
+        return this.contextService.getActiveFileContent() ?? '';
     }
 
     async runProofread() {
@@ -292,11 +275,9 @@ export class ChatView extends ItemView {
         const agentNameLine = lines[0] || '';
         const restOfLines = lines.slice(1);
 
-        // Render Agent Name
         const agentNameEl = reviewContainer.createEl('div', { cls: 'review-agent-name' });
         MarkdownRenderer.render(this.app, agentNameLine, agentNameEl, '', this);
 
-        // Find and render rating
         const ratingLineIndex = restOfLines.findIndex(line => line.startsWith('評価：'));
         if (ratingLineIndex > -1) {
             const ratingLine = restOfLines[ratingLineIndex];
@@ -314,7 +295,6 @@ export class ChatView extends ItemView {
             }
         }
 
-        // Render the rest of the review content as Markdown
         const contentEl = reviewContainer.createEl('div', { cls: 'review-content' });
         const content = restOfLines.filter((line, index) => index !== ratingLineIndex).join('\n').trim();
         MarkdownRenderer.render(this.app, content, contentEl, '', this);

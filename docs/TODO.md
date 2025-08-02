@@ -3,12 +3,10 @@
 
 ## 現在の作業
 
-- [x] プロジェクトの初期設定
-- [x] 開発計画の策定 (`docs/計画案.md`)
-- [x] TODOリストの作成 (`docs/TODO.md`)
-- [x] プラグインの基本構造（`main.ts`）の設計と実装
-- [x] 設定画面（`novelaidToolsSettings.ts`, `novelaidToolsSettingsTab.ts`）の実装
-- [x] Gemini APIとの連携部分（`src/services/geminiService.ts`）の基礎実装
+- [ ] **コンテキスト取得処理のリファクタリング**
+    - [ ] `src/services/obsidianContextService.ts` を作成
+    - [ ] 既存のコンテキスト取得処理を新サービスに移行
+    - [ ] 関連モジュールを新サービスを利用するよう修正
 
 
 ## 次回作業予定

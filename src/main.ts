@@ -5,12 +5,16 @@ import { NovelaidToolsSettingsTab } from './novelaidToolsSettingsTab';
 import * as path from 'path';
 import { applyRubyToElement } from './services/rubyTextFormatter';
 import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
+import { ObsidianContextService } from './services/obsidianContextService';
 
 export default class NovelaidToolsPlugin extends Plugin {
 	settings: NovelaidToolsPluginSettings;
+	contextService: ObsidianContextService;
 
 	async onload() {
 		await this.loadSettings();
+
+		this.contextService = new ObsidianContextService(this.app);
 
 		// Add a ribbon icon for the chat view
 		this.addRibbonIcon('message-square', 'AI Chat', () => {
@@ -23,7 +27,7 @@ export default class NovelaidToolsPlugin extends Plugin {
 		// Register the view
 		this.registerView(
 			CHAT_VIEW_TYPE,
-			(leaf) => new ChatView(leaf, this.settings)
+			(leaf) => new ChatView(leaf, this.settings, this.contextService)
 		);
 
 		//ルビの表示
