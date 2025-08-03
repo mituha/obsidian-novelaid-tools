@@ -11,6 +11,10 @@
 
 ## 次回作業予定
 
+- [ ] **Gemini AIモデル選択機能の実装**
+    - [ ] `src/novelaidToolsSettings.ts` に `geminiModel` と `customGeminiModel` を追加
+    - [ ] `src/novelaidToolsSettingsTab.ts` にモデル選択用ドロップダウンとカスタム入力テキストボックスを追加
+    - [ ] `src/services/geminiService.ts` で設定されたモデル名を参照するように修正
 - [ ] ChatViewのUI・機能拡充（AI応答の表示、履歴管理など）
 - [ ] Gemini APIの高度な活用（レビュー・校正・JSONレスポンス等の拡張）
 - [ ] 校正機能のUIデザイン改善（縦並びレイアウト・色分け等の検討）

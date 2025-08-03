@@ -46,7 +46,7 @@ const fileManager = new GoogleAIFileManager("YOUR_API_KEY");
 const cacheManager = new GoogleAICacheManager("YOUR_API_KEY");
 
 // Get a model instance, then call methods on it
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 const result = await model.generateContent(...);
 const chat = model.startChat(...);
 
@@ -92,7 +92,7 @@ const ai = new GoogleGenAI({apiKey: "GEMINI_API_KEY"});
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 const prompt = "Tell me a story in 300 words";
 
 const result = await model.generateContent(prompt);
@@ -119,7 +119,7 @@ console.log(response.text);
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI("GOOGLE_API_KEY");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 function fileToGenerativePart(path, mimeType) {
   return {
@@ -170,7 +170,7 @@ console.log(response.text);
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI("GOOGLE_API_KEY");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 
 const prompt = "Write a story about a magic backpack.";
 
@@ -208,7 +208,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI("GOOGLE_API_KEY");
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
   generationConfig: {
     candidateCount: 1,
     stopSequences: ["x"],
@@ -256,7 +256,7 @@ console.log(response.text);
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI("GOOGLE_API_KEY");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
 const chat = model.startChat({
   history: [
     {
@@ -325,7 +325,7 @@ def get_current_weather(location: str) -> str:
     return "23C"
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     tools=[get_current_weather]
 )
 
@@ -375,7 +375,7 @@ def get_current_weather(city: str) -> str:
     return "23C"
 
 model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
+    model_name="gemini-2.5-flash",
     tools=[get_current_weather]
 )
 
@@ -410,7 +410,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI("GOOGLE_API_KEY");
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-flash",
+  model: "gemini-2.5-flash",
   tools: [{ codeExecution: {} }],
 });
 
@@ -455,7 +455,7 @@ TypeScriptで実装してください。
 ```Python
 import google.generativeai as genai
 
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 response = model.generate_content(
     contents="what is the Google stock price?",
     tools='google_search_retrieval'
@@ -506,7 +506,7 @@ const schema = {
 };
 
 const model = genAI.getGenerativeModel({
-  model: "gemini-1.5-pro",
+  model: "gemini-2.5-pro",
   generationConfig: {
     responseMimeType: "application/json",
     responseSchema: schema,

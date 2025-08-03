@@ -1,8 +1,7 @@
-import { GoogleGenAI, HarmBlockThreshold, HarmCategory } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 import { NovelaidToolsPluginSettings } from "../novelaidToolsSettings";
 
 const API_KEY_ERROR_MESSAGE = "Gemini APIキーが設定されていません。";
-const GEMINI_TEXT_MODEL = "gemini-2.5-flash";
 
 let ai: GoogleGenAI | null = null;
 let pluginSettings: NovelaidToolsPluginSettings | null = null;
@@ -80,6 +79,23 @@ const checkApiKey = (): boolean => {
     return true;
 };
 
+/**
+ * 現在アクティブなGeminiモデル名を取得します。
+ * カスタムモデルが設定されていればそれを、なければ標準のモデル名を返します。
+ * @returns {string} アクティブなモデル名
+ */
+const getActiveModel = (): string => {
+    if (!pluginSettings) {
+        // デフォルトのフォールバック
+        return 'gemini-2.5-flash';
+    }
+    if (pluginSettings.geminiModel === 'custom' && pluginSettings.customGeminiModel) {
+        return pluginSettings.customGeminiModel;
+    }
+    return pluginSettings.geminiModel;
+};
+
+
 export const generateChatResponse = async (userInput: string, context: string): Promise<string> => {
     if (!checkApiKey() || !ai) {
         throw new Error(API_KEY_ERROR_MESSAGE);
@@ -99,7 +115,7 @@ ${context}
 
     try {
         const result = await ai.models.generateContent({
-            model: GEMINI_TEXT_MODEL,
+            model: getActiveModel(),
             contents: [{ role: "user", parts: [{ text: prompt }] }],
         });
         return result.text || "AIからの応答が得られませんでした。";
@@ -132,7 +148,7 @@ ${context}
 
     try {
         const result = await ai.models.generateContent({
-            model: GEMINI_TEXT_MODEL,
+            model: getActiveModel(),
             contents: [{ role: "user", parts: [{ text: prompt }] }],
         });
 
@@ -167,7 +183,7 @@ export const generateProofread = async (context: string): Promise<ProofreadResul
 - 修正前の文章は before キーに、修正後の文章は after キーに、修正理由は reason キーに格納してください。
 - 修正理由には「誤字」「てにおはの誤り」「より自然な表現へ変更」のように、具体的な理由を簡潔に記述してください。
 - 文脈を維持するため、修正箇所は単語や文節ではなく、ある程度の長さの文章を含めてください。
-- JSON以外の説明や前��きは一切不要です。
+- JSON以外の説明や前置きは一切不要です。
 
 [
   {
@@ -185,7 +201,7 @@ ${context}
 
     try {
         const result = await ai.models.generateContent({
-            model: GEMINI_TEXT_MODEL,
+            model: getActiveModel(),
             contents: [{ role: "user", parts: [{ text: prompt }] }],
             config: {
                 responseMimeType: "application/json",

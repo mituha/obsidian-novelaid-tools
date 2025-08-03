@@ -6,6 +6,10 @@ export interface NovelaidToolsPluginSettings {
 	//
 	useAI: boolean;
 	geminApiKey: string;
+
+	// Geminiモデル設定
+	geminiModel: string;
+	customGeminiModel: string;
 }
 
 export const DEFAULT_SETTINGS: NovelaidToolsPluginSettings = {
@@ -15,4 +19,8 @@ export const DEFAULT_SETTINGS: NovelaidToolsPluginSettings = {
 
 	//APIキーは初期値として空文字列を設定
 	geminApiKey: '',
+
+	// デフォルトのGeminiモデル
+	geminiModel: 'gemini-2.5-flash',
+	customGeminiModel: '',
 }
