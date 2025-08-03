@@ -1,5 +1,6 @@
-import { App, PluginSettingTab, Setting } from 'obsidian';
+import { App, PluginSettingTab, Setting, Notice } from 'obsidian';
 import NovelaidToolsPlugin from './main';
+import { testConnection } from './services/geminiService';
 
 export class NovelaidToolsSettingsTab extends PluginSettingTab {
 	plugin: NovelaidToolsPlugin;
@@ -52,6 +53,37 @@ export class NovelaidToolsSettingsTab extends PluginSettingTab {
 						this.plugin.settings.geminApiKey = value;
 						await this.plugin.saveSettings();
 					}));
+			
+			// 接続テストボタン
+			new Setting(containerEl)
+				.setName('接続テスト')
+				.setDesc('入力されたAPIキーと選択されたモデルで、Gemini APIへの接続をテストします。')
+				.addButton(button => {
+					button
+						.setButtonText('テスト実行')
+						.onClick(async () => {
+							const apiKey = this.plugin.settings.geminApiKey;
+							const model = this.plugin.settings.geminiModel === 'custom' 
+								? this.plugin.settings.customGeminiModel 
+								: this.plugin.settings.geminiModel;
+
+							if (!model) {
+								new Notice('テストするモデルが選択または入力されていません。');
+								return;
+							}
+
+							button.setButtonText('テスト中...').setDisabled(true);
+							const result = await testConnection(apiKey, model);
+							button.setButtonText('テスト実行').setDisabled(false);
+
+							if (result.success) {
+								new Notice('✅ 接続に成功しました！');
+							} else {
+								new Notice(`❌ 接続に失敗しました。\nエラー: ${result.error}`);
+							}
+						});
+				});
+
 
 			// Geminiモデル選択ドロップダウン
 			const modelSetting = new Setting(containerEl)
@@ -77,7 +109,7 @@ export class NovelaidToolsSettingsTab extends PluginSettingTab {
 			if (this.plugin.settings.geminiModel === 'custom') {
 				new Setting(containerEl)
 					.setName('カスタムモデル名')
-					.setDesc('使用したいモデルの正確な名前を入力してください。（例: models/gemini-2.5-pro-latest）')
+					.setDesc('使用したいモデルの正確な名前を入力してください。（例: models/gemini-1.5-pro-latest）')
 					.addText(text => text
 						.setPlaceholder('Enter custom model name')
 						.setValue(this.plugin.settings.customGeminiModel)

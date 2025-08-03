@@ -95,6 +95,27 @@ const getActiveModel = (): string => {
     return pluginSettings.geminiModel;
 };
 
+export const testConnection = async (apiKey: string, model: string): Promise<{ success: boolean; error?: string }> => {
+    if (!apiKey || apiKey.trim() === "") {
+        apiKey = process.env.GEMINI_API_KEY || '';
+    }
+    if (!apiKey || apiKey.trim() === "") {
+        return { success: false, error: "APIキーが入力されていません。" };
+    }
+
+    try {
+        const testAI = new GoogleGenAI({ apiKey: apiKey });
+        await testAI.models.generateContent({
+            model: model,
+            contents: [{ role: "user", parts: [{ text: "test" }] }],
+        });
+        return { success: true };
+    } catch (error: any) {
+        console.error("Gemini connection test failed:", error);
+        return { success: false, error: error.message || "不明なエラーが発生しました。" };
+    }
+};
+
 
 export const generateChatResponse = async (userInput: string, context: string): Promise<string> => {
     if (!checkApiKey() || !ai) {
