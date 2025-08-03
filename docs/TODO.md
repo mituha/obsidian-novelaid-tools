@@ -11,6 +11,9 @@
 
 ## 次回作業予定
 
+- [ ] **AI接続テスト機能の実装**
+    - [ ] `src/services/geminiService.ts` に `testConnection` 関数を追加
+    - [ ] `src/novelaidToolsSettingsTab.ts` に「接続テスト」ボタンと結果通知ロジックを実装
 - [ ] **Gemini AIモデル選択機能の実装**
     - [ ] `src/novelaidToolsSettings.ts` に `geminiModel` と `customGeminiModel` を追加
     - [ ] `src/novelaidToolsSettingsTab.ts` にモデル選択用ドロップダウンとカスタム入力テキストボックスを追加
