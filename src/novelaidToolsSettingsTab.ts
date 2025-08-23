@@ -93,8 +93,10 @@ export class NovelaidToolsSettingsTab extends PluginSettingTab {
 			modelSetting.addDropdown(dropdown => {
 				dropdown
 					.addOption('gemini-2.5-flash', 'Gemini 2.5 Flash (推奨)')
+					.addOption('gemini-2.5-flash-lite', 'Gemini 2.5 Flash Lite')
 					.addOption('gemini-2.5-pro', 'Gemini 2.5 Pro')
 					.addOption('gemini-2.0-flash', 'Gemini 2.0 Flash')
+					.addOption('gemini-2.0-flash-lite', 'Gemini 2.0 Flash Lite')
 					.addOption('custom', 'カスタム')
 					.setValue(this.plugin.settings.geminiModel)
 					.onChange(async (value) => {
