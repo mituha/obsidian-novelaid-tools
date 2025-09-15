@@ -245,6 +245,7 @@ ${text}
                     why: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
                     how: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
                 },
+                required: ["who", "when", "where", "what", "why", "how"],
             },
             summary: {
                 type: "object",
@@ -256,6 +257,7 @@ ${text}
                 required: ["overallRating", "positiveFeedback", "improvementPoints"],
             },
         },
+        required: ["fiveW1H", "summary"],
     };
 
     try {
@@ -293,6 +295,7 @@ ${text}
                     ten: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
                     ketsu: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
                 },
+                required: ["ki", "sho", "ten", "ketsu"],
             },
             summary: {
                 type: "object",
@@ -304,6 +307,7 @@ ${text}
                 required: ["overallRating", "positiveFeedback", "improvementPoints"],
             },
         },
+        required: ["kishotenketsu", "summary"],
     };
 
     try {
