@@ -86,7 +86,8 @@ export class ChatView extends ItemView {
         // 内部的には存在するが、非表示にされている。
         this.addNavAction('star', 'AIレビューを実行', (evt) => this.runReview());
         this.addNavAction('check-check', 'AI校正を実行', (evt) => this.runProofread());
-        this.addNavAction('clipboard-list', '物語の構成を分析', (evt) => this.runStoryStructureAnalysis());
+        this.addNavAction('list-checks', '5W1H分析', (evt) => this.run5W1HAnalysis());
+        this.addNavAction('milestone', '起承転結分析', (evt) => this.runKishotenketsuAnalysis());
     }
     private getNavButtonsContainer(): Element {
         // nav-header
@@ -323,114 +324,117 @@ export class ChatView extends ItemView {
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
     }
 
-    async runStoryStructureAnalysis() {
-        this.addMessage('物語の構成分析を開始します...', 'assistant');
-        this.inputEl.disabled = true;
-        this.sendButton.disabled = true;
+    async run5W1HAnalysis() {
+        this.addMessage('5W1H分析を開始します...', 'assistant');
+        this.setUIState(false);
 
         const thinkingMessage = this.addMessage('分析中...', 'assistant');
         thinkingMessage.addClass('streaming');
 
         try {
-            document.body.style.cursor = 'wait';
-            const notice = new Notice(`AIが物語の構成を分析中です...`, 0);
-
             const editorContent = this.getCurrentContext();
             if (!editorContent.trim()) {
                 this.updateMessage(thinkingMessage, '分析対象の文章がありません。', 'assistant-error');
-                notice.hide();
                 return;
             }
 
-            const result = await this.plugin.aiOrchestrator.analyzeStoryStructure(editorContent);
+            const result = await this.plugin.aiOrchestrator.analyze5W1H(editorContent);
             this.messagesContainer.removeChild(thinkingMessage);
-            this.displayStoryStructureAnalysis(result);
-            notice.hide();
+            this.display5W1HAnalysis(result);
 
         } catch (error) {
-            console.error('Error getting story structure analysis:', error);
-            this.updateMessage(thinkingMessage, `構成分析結果の取得中にエラーが発生しました: ${error.message}`, 'assistant-error');
+            console.error('Error getting 5W1H analysis:', error);
+            this.updateMessage(thinkingMessage, `5W1H分析結果の取得中にエラーが発生しました: ${error.message}`, 'assistant-error');
         } finally {
-            this.inputEl.disabled = false;
-            this.sendButton.disabled = false;
-            document.body.style.cursor = 'auto';
-            this.inputEl.focus();
+            this.setUIState(true);
         }
     }
 
-    private displayStoryStructureAnalysis(result: any) {
+    async runKishotenketsuAnalysis() {
+        this.addMessage('起承転結分析を開始します...', 'assistant');
+        this.setUIState(false);
+    
+        const thinkingMessage = this.addMessage('分析中...', 'assistant');
+        thinkingMessage.addClass('streaming');
+    
+        try {
+            const editorContent = this.getCurrentContext();
+            if (!editorContent.trim()) {
+                this.updateMessage(thinkingMessage, '分析対象の文章がありません。', 'assistant-error');
+                return;
+            }
+    
+            const result = await this.plugin.aiOrchestrator.analyzeKishotenketsu(editorContent);
+            this.messagesContainer.removeChild(thinkingMessage);
+            this.displayKishotenketsuAnalysis(result);
+    
+        } catch (error) {
+            console.error('Error getting Kishotenketsu analysis:', error);
+            this.updateMessage(thinkingMessage, `起承転結分析結果の取得中にエラーが発生しました: ${error.message}`, 'assistant-error');
+        } finally {
+            this.setUIState(true);
+        }
+    }
+
+    private display5W1HAnalysis(result: any) {
+        this.displayAnalysisResult('5W1H分析結果', result.fiveW1H, result.summary);
+    }
+    
+    private displayKishotenketsuAnalysis(result: any) {
+        this.displayAnalysisResult('起承転結分析結果', result.kishotenketsu, result.summary);
+    }
+
+    private displayAnalysisResult(title: string, analysisData: any, summaryData: any) {
         const resultContainer = this.messagesContainer.createEl('div', {
-            cls: 'message assistant story-analysis-result',
+            cls: 'message assistant analysis-result',
         });
     
-        resultContainer.createEl('strong', { text: '物語の構成分析結果' });
+        resultContainer.createEl('strong', { text: title });
     
-        // Summary
-        const summary = result.summary;
-        if (summary) {
-            const summarySection = resultContainer.createEl('div', { cls: 'analysis-section' });
-            summarySection.createEl('h4', { text: '総合評価' });
-            
-            const ratingEl = summarySection.createEl('div', { cls: 'review-rating' });
+        // Summary Section
+        if (summaryData) {
+            const summaryBlock = resultContainer.createEl('div', { cls: 'analysis-block' });
+            summaryBlock.createEl('div', { cls: 'analysis-label', text: '総合評価' });
+            const ratingEl = summaryBlock.createEl('div', { cls: 'review-rating' });
             ratingEl.createEl('strong', { text: '評価: ' });
             for (let i = 0; i < 5; i++) {
                 const starEl = ratingEl.createSpan({ cls: 'review-star' });
-                setIcon(starEl, i < summary.overallRating ? 'star' : 'star-off');
+                setIcon(starEl, i < summaryData.overallRating ? 'star' : 'star-off');
             }
-    
-            summarySection.createEl('p').innerHTML = `<strong>良かった点:</strong> ${summary.positiveFeedback}`;
-            summarySection.createEl('p').innerHTML = `<strong>改善点:</strong> ${summary.improvementPoints}`;
+            summaryBlock.createEl('p').innerHTML = `<strong>良かった点:</strong> ${summaryData.positiveFeedback}`;
+            summaryBlock.createEl('p').innerHTML = `<strong>改善点:</strong> ${summaryData.improvementPoints}`;
         }
     
-        // 5W1H Analysis
-        const fiveW1H = result.analysis.fiveW1H;
-        if (fiveW1H) {
-            const fiveW1HSection = resultContainer.createEl('div', { cls: 'analysis-section' });
-            fiveW1HSection.createEl('h4', { text: '5W1Hの分析' });
-            const table = fiveW1HSection.createEl('table');
-            const thead = table.createEl('thead');
-            thead.createEl('tr').append(
-                createEl('th', { text: '項目' }),
-                createEl('th', { text: '評価' }),
-                createEl('th', { text: '理由' }),
-                createEl('th', { text: '提案' })
-            );
-            const tbody = table.createEl('tbody');
-            for (const key in fiveW1H) {
-                const item = fiveW1H[key];
-                const row = tbody.createEl('tr');
-                row.createEl('td', { text: key.toUpperCase() });
-                row.createEl('td', { text: '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating) });
-                row.createEl('td', { text: item.reason });
-                row.createEl('td', { text: item.suggestion });
-            }
-        }
+        // Analysis Details
+        for (const key in analysisData) {
+            const item = analysisData[key];
+            const block = resultContainer.createEl('div', { cls: 'analysis-block' });
     
-        // Kishotenketsu Analysis
-        const kishotenketsu = result.analysis.kishotenketsu;
-        if (kishotenketsu) {
-            const kishoSection = resultContainer.createEl('div', { cls: 'analysis-section' });
-            kishoSection.createEl('h4', { text: '起承転結の分析' });
-            const table = kishoSection.createEl('table');
-            const thead = table.createEl('thead');
-            thead.createEl('tr').append(
-                createEl('th', { text: '項目' }),
-                createEl('th', { text: '評価' }),
-                createEl('th', { text: '理由' }),
-                createEl('th', { text: '提案' })
-            );
-            const tbody = table.createEl('tbody');
-            for (const key in kishotenketsu) {
-                const item = kishotenketsu[key];
-                const row = tbody.createEl('tr');
-                row.createEl('td', { text: key });
-                row.createEl('td', { text: '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating) });
-                row.createEl('td', { text: item.reason });
-                row.createEl('td', { text: item.suggestion });
-            }
+            block.createEl('div', { cls: 'analysis-label', text: key.toUpperCase() });
+    
+            const rating = block.createEl('div', { cls: 'analysis-item' });
+            rating.createEl('span', { cls: 'analysis-item-label', text: '評価: ' });
+            rating.createEl('span', { cls: 'analysis-item-text', text: '★'.repeat(item.rating) + '☆'.repeat(5 - item.rating) });
+    
+            const reason = block.createEl('div', { cls: 'analysis-item' });
+            reason.createEl('span', { cls: 'analysis-item-label', text: '理由: ' });
+            reason.createEl('span', { cls: 'analysis-item-text', text: item.reason });
+    
+            const suggestion = block.createEl('div', { cls: 'analysis-item' });
+            suggestion.createEl('span', { cls: 'analysis-item-label', text: '提案: ' });
+            suggestion.createEl('span', { cls: 'analysis-item-text', text: item.suggestion });
         }
     
         this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+    }
+
+    private setUIState(enabled: boolean) {
+        this.inputEl.disabled = !enabled;
+        this.sendButton.disabled = !enabled;
+        document.body.style.cursor = enabled ? 'auto' : 'wait';
+        if (enabled) {
+            this.inputEl.focus();
+        }
     }
 
     async onClose() {

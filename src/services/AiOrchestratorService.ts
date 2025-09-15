@@ -216,16 +216,15 @@ ${context}
     }
 };
 
-public async analyzeStoryStructure(text: string): Promise<any> {
+public async analyze5W1H(text: string): Promise<any> {
     if (!this.provider) {
         throw new Error("AIプロバイダーが初期化されていません。");
     }
 
-    const prompt = `あなたはプロの小説編集者です。以下の文章を分析し、物語の構成要素がどの程度満たされているかを評価してください。
+    const prompt = `あなたはプロの小説編集者です。以下の文章を分析し、物語の構成要素「5W1H」がどの程度満たされているかを評価してください。
 
-評価項目は「5W1H」と「起承転結」です。
-それぞれの項目について、1から5の5段階で評価し、その評価の理由と具体的な改善案を日本語で記述してください。
-
+各項目について、1から5の5段階で評価し、その評価の理由と具体的な改善案を日本語で記述してください。
+最後に、総合評価と良かった点、改善点を記述してください。
 レスポンスは必ず指定されたJSON形式で返してください。
 
 ---
@@ -236,109 +235,15 @@ ${text}
     const schema = {
         type: "object",
         properties: {
-            analysis: {
+            fiveW1H: {
                 type: "object",
                 properties: {
-                    fiveW1H: {
-                        type: "object",
-                        properties: {
-                            who: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            when: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            where: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            what: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            why: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            how: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                        },
-                    },
-                    kishotenketsu: {
-                        type: "object",
-                        properties: {
-                            ki: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            sho: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            ten: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                            ketsu: {
-                                type: "object",
-                                properties: {
-                                    rating: { type: "number" },
-                                    reason: { type: "string" },
-                                    suggestion: { type: "string" },
-                                },
-                                required: ["rating", "reason", "suggestion"],
-                            },
-                        },
-                    },
+                    who: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    when: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    where: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    what: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    why: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    how: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
                 },
             },
             summary: {
@@ -354,11 +259,58 @@ ${text}
     };
 
     try {
-        const result = await this.provider.generateStructuredResponse(prompt, schema);
-        return result;
+        return await this.provider.generateStructuredResponse(prompt, schema);
     } catch (error) {
-        console.error("Error generating story structure analysis:", error);
-        throw new Error("物語構成の分析に失敗しました。");
+        console.error("Error generating 5W1H analysis:", error);
+        throw new Error("5W1H分析に失敗しました。");
+    }
+}
+
+public async analyzeKishotenketsu(text: string): Promise<any> {
+    if (!this.provider) {
+        throw new Error("AIプロバイダーが初期化されていません。");
+    }
+
+    const prompt = `あなたはプロの小説編集者です。以下の文章を分析し、物語の構成要素「起承転結」がどの程度満たされているかを評価してください。
+
+各項目について、1から5の5段階で評価し、その評価の理由と具体的な改善案を日本語で記述してください。
+最後に、総合評価と良かった点、改善点を記述してください。
+レスポンスは必ず指定されたJSON形式で返してください。
+
+---
+${text}
+---
+`;
+
+    const schema = {
+        type: "object",
+        properties: {
+            kishotenketsu: {
+                type: "object",
+                properties: {
+                    ki: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    sho: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    ten: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                    ketsu: { type: "object", properties: { rating: { type: "number" }, reason: { type: "string" }, suggestion: { type: "string" } }, required: ["rating", "reason", "suggestion"] },
+                },
+            },
+            summary: {
+                type: "object",
+                properties: {
+                    overallRating: { type: "number" },
+                    positiveFeedback: { type: "string" },
+                    improvementPoints: { type: "string" },
+                },
+                required: ["overallRating", "positiveFeedback", "improvementPoints"],
+            },
+        },
+    };
+
+    try {
+        return await this.provider.generateStructuredResponse(prompt, schema);
+    } catch (error) {
+        console.error("Error generating Kishotenketsu analysis:", error);
+        throw new Error("起承転結分析に失敗しました。");
     }
 }
 

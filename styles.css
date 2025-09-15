@@ -146,42 +146,42 @@
   color: var(--interactive-accent); /* Ensure icon color is set */
 }
 
-/* Styles for Story Structure Analysis */
-.story-analysis-result {
+/* Styles for Analysis Results (5W1H, Kishotenketsu) */
+.analysis-result {
   background-color: var(--background-secondary-alt);
   border-left: 4px solid var(--color-blue);
   max-width: 95%;
 }
 
-.story-analysis-result .analysis-section {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid var(--background-modifier-border);
+.analysis-block {
+  background: var(--background-secondary);
+  border-left: 3px solid var(--color-accent);
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.story-analysis-result h4 {
-  margin-bottom: 10px;
-  font-size: 1.2em;
+.analysis-label {
+  font-weight: bold;
+  font-size: 1.1em;
   color: var(--text-accent);
+  margin-bottom: 4px;
 }
 
-.story-analysis-result table {
-  width: 100%;
-  border-collapse: collapse;
+.analysis-item {
+  display: flex;
 }
 
-.story-analysis-result th,
-.story-analysis-result td {
-  border: 1px solid var(--background-modifier-border);
-  padding: 8px;
-  text-align: left;
-  font-size: 0.9em;
+.analysis-item-label {
+  font-weight: bold;
+  margin-right: 8px;
+  flex-shrink: 0;
+  width: 50px; /* Adjust as needed */
 }
 
-.story-analysis-result th {
-  background-color: var(--background-secondary);
-}
-
-.story-analysis-result td:nth-child(2) {
-  white-space: nowrap;
+.analysis-item-text {
+  color: var(--text-normal);
 }
