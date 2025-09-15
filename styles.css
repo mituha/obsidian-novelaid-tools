@@ -1,7 +1,7 @@
 /* 校正結果（proofread）縦並び表示用 */
 .proofread-block {
   background: var(--background-secondary-alt);
-  border-left: 4px solid var(--color-yellow);
+  border-left: 4px solid var(--interactive-accent); /* より目立つ色に変更 */
   margin: 12px 0;
   padding: 10px 14px;
   border-radius: 8px;
@@ -13,20 +13,45 @@
   font-weight: bold;
   margin-right: 4px;
 }
-.proofread-before-text {
-  color: var(--text-error);
-  background: #fff3f3;
-  padding: 1px 4px;
-  border-radius: 3px;
-}
+
+.proofread-before-text,
 .proofread-after-text {
-  color: var(--color-green);
-  background: #f3fff3;
-  padding: 1px 4px;
-  border-radius: 3px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-family: var(--font-monospace);
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 4px 0;
+  user-select: text; /* テキスト選択を可能にする */
 }
+
+.proofread-before-text {
+  background-color: rgba(255, 0, 0, 0.1);
+  border-left: 3px solid var(--color-red);
+  color: var(--text-normal);
+}
+
+.proofread-after-text {
+  background-color: rgba(0, 255, 0, 0.1);
+  border-left: 3px solid var(--color-green);
+  color: var(--text-normal);
+}
+
+.proofread-before-text::before {
+  content: "- ";
+  color: var(--color-red);
+  font-weight: bold;
+}
+
+.proofread-after-text::before {
+  content: "+ ";
+  color: var(--color-green);
+  font-weight: bold;
+}
+
 .proofread-reason-text {
-  color: var(--color-accent);
+  color: var(--text-accent);
+  margin-top: 8px;
 }
 /* Existing styles */
 

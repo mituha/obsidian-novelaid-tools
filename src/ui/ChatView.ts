@@ -253,12 +253,13 @@ export class ChatView extends ItemView {
         for (const result of results) {
             const block = resultContainer.createEl('div', { cls: 'proofread-block' });
 
+            //スタイルのほうで　+/- を付けたので修正前、修正後の項目表示は削除
             const before = block.createEl('div', { cls: 'proofread-before' });
-            before.createEl('span', { cls: 'proofread-label', text: '修正前: ' });
+            //before.createEl('span', { cls: 'proofread-label', text: '修正前: ' });
             before.createEl('span', { cls: 'proofread-before-text', text: result.before });
 
             const after = block.createEl('div', { cls: 'proofread-after' });
-            after.createEl('span', { cls: 'proofread-label', text: '修正後: ' });
+            //after.createEl('span', { cls: 'proofread-label', text: '修正後: ' });
             after.createEl('span', { cls: 'proofread-after-text', text: result.after });
 
             const reason = block.createEl('div', { cls: 'proofread-reason' });
