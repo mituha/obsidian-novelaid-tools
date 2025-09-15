@@ -1,5 +1,4 @@
 import { App, MarkdownView, Modal, Notice, Plugin, TFile, Setting } from 'obsidian';
-import { initializeGeminiAI } from './services/geminiService'; // Import the function to initialize Gemini AI
 import { NovelaidToolsPluginSettings, DEFAULT_SETTINGS } from './novelaidToolsSettings';
 import { NovelaidToolsSettingsTab } from './novelaidToolsSettingsTab';
 import * as path from 'path';
@@ -58,14 +57,6 @@ export default class NovelaidToolsPlugin extends Plugin {
 	async loadSettings() {
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
 
-		if (this.settings.useAI) {
-			//APIキーがある場合、AIエージェントの初期化を行う。
-			if (initializeGeminiAI(this.settings.geminApiKey, this.settings)) {
-				console.log('Gemini AI initialized with provided API key.');
-			} else {
-				console.warn('No valid Gemini API key found. AI features may not work as expected.');
-			}
-		}
    		// AI Orchestratorの初期化
 		this.aiOrchestrator = new AiOrchestratorService(this.settings);
 		console.log('ai orchestrator loaded');
