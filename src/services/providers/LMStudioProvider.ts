@@ -118,6 +118,8 @@ export class LMStudioProvider extends BaseAiProvider {
             if (!content) {
                 throw new Error("AIからのJSON応答が空です。");
             }
+            console.log("Raw JSON response:", content);
+            
             // レスポンスがマークダウンのコードブロックで囲まれている場合、それを除去する
             const cleanedText = content.replace(/^```json\n?/, '').replace(/```$/, '');
             return JSON.parse(cleanedText);
@@ -126,7 +128,7 @@ export class LMStudioProvider extends BaseAiProvider {
             throw new Error(`AIからのJSON応答の生成に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
-    
+
     async generateFunctionResponse(prompt: string, tools?: AiFunction[]): Promise<FWChatMessage> {
         const initialMessage: FWChatMessage = { role: "user", parts: [{ text: prompt }] };
         //TODO ツール対応

@@ -1,8 +1,8 @@
 import { ItemView, WorkspaceLeaf, MarkdownView, Notice, setIcon, MarkdownRenderer, IconName } from 'obsidian';
 import { NovelaidToolsPluginSettings } from '../novelaidToolsSettings';
-import { generateProofread, ProofreadResult } from '../services/geminiService';
 import { ObsidianContextService } from '../services/obsidianContextService';
 import NovelaidToolsPlugin from 'src/main';
+import { ProofreadResult } from '../services/AiOrchestratorService';
 
 export const CHAT_VIEW_TYPE = 'novelaid-chat-view';
 
@@ -154,7 +154,7 @@ export class ChatView extends ItemView {
                 return;
             }
 
-            const results = await generateProofread(editorContent);
+            const results = await this.plugin.aiOrchestrator.generateProofread(editorContent);
             this.messagesContainer.removeChild(thinkingMessage);
             this.displayProofreadResult(results);
             notice.hide();

@@ -3,7 +3,12 @@ import { AiFunction, ChatMessage, IGenericAiProvider } from './providers/IGeneri
 import { GeminiProvider } from './providers/GeminiProvider';
 import { LMStudioProvider } from './providers/LMStudioProvider';
 import { Notice } from 'obsidian';
-import { A } from 'vitest/dist/chunks/environment.d.cL3nLXbE';
+
+export interface ProofreadResult {
+    before: string;
+    after: string;
+    reason: string;
+}
 
 export class AiOrchestratorService {
     private provider: IGenericAiProvider | null;
@@ -163,5 +168,52 @@ ${context}
         }
     };
 
+public generateProofread = async (context: string): Promise<ProofreadResult[]> => {
+            if (!this.provider) {
+            throw new Error("AIプロバイダーが初期化されていません。");
+        }
+
+    const prompt = `あなたは優秀な校正者です。
+以下の文章を校正し、誤字脱字や不自然な表現を修正してください。
+修正箇所のみを、以下のJSON形式の配列で返却してください。修正がない場合は空の配列を返却してください。
+
+- 修正前の文章は before キーに、修正後の文章は after キーに、修正理由は reason キーに格納してください。
+- 修正理由には「誤字」「てにおはの誤り」「より自然な表現へ変更」のように、具体的な理由を簡潔に記述してください。
+- 文脈を維持するため、修正箇所は単語や文節ではなく、ある程度の長さの文章を含めてください。
+- JSON以外の説明や前置きは一切不要です。
+
+[
+  {
+    "before": "修正前の文章の一部",
+    "after": "修正後の文章の一部",
+    "reason": "修正理由（例：誤字）"
+  }
+]
+
+# 原稿
+---
+${context}
+---
+`;
+
+    try {
+        const result = await this.provider.generateStructuredResponse(prompt, {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    before: { type: "string" },
+                    after: { type: "string" },
+                    reason: { type: "string" },
+                },
+                required: ["before", "after", "reason"],
+            },
+        });
+        return result as ProofreadResult[];
+    } catch (error) {
+        console.error("Error generating proofread from Gemini:", error);
+        throw new Error("AI校正の生成に失敗しました。");
+    }
+};
 
 }

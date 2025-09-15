@@ -102,7 +102,7 @@ export class GeminiProvider extends BaseAiProvider {
             const text = result.text ?? "{}";
             // レスポンスがマークダウンのコードブロックで囲まれている場合、それを除去する
             const cleanedText = text.replace(/^```json\n?/, '').replace(/```$/, '');
-            return JSON.parse(cleanedText);
+            return JSON.parse(text);
         } catch (error) {
             console.error("Error generating JSON from Gemini:", error);
             throw new Error(`AIからのJSON応答の生成に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
