@@ -6,11 +6,13 @@ import * as path from 'path';
 import { applyRubyToElement } from './services/rubyTextFormatter';
 import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
 import { ObsidianContextService } from './services/obsidianContextService';
+import { AiOrchestratorService } from './services/AiOrchestratorService';
 
 export default class NovelaidToolsPlugin extends Plugin {
 	settings: NovelaidToolsPluginSettings;
 	contextService: ObsidianContextService;
-
+	aiOrchestrator: AiOrchestratorService;
+	
 	async onload() {
 		await this.loadSettings();
 
@@ -64,6 +66,10 @@ export default class NovelaidToolsPlugin extends Plugin {
 				console.warn('No valid Gemini API key found. AI features may not work as expected.');
 			}
 		}
+   		// AI Orchestratorの初期化
+		this.aiOrchestrator = new AiOrchestratorService(this.settings);
+		console.log('ai orchestrator loaded');
+
 	}
 
 	async saveSettings() {
