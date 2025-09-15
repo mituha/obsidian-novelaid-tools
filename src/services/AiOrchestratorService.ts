@@ -216,4 +216,150 @@ ${context}
     }
 };
 
+public async analyzeStoryStructure(text: string): Promise<any> {
+    if (!this.provider) {
+        throw new Error("AIプロバイダーが初期化されていません。");
+    }
+
+    const prompt = `あなたはプロの小説編集者です。以下の文章を分析し、物語の構成要素がどの程度満たされているかを評価してください。
+
+評価項目は「5W1H」と「起承転結」です。
+それぞれの項目について、1から5の5段階で評価し、その評価の理由と具体的な改善案を日本語で記述してください。
+
+レスポンスは必ず指定されたJSON形式で返してください。
+
+---
+${text}
+---
+`;
+
+    const schema = {
+        type: "object",
+        properties: {
+            analysis: {
+                type: "object",
+                properties: {
+                    fiveW1H: {
+                        type: "object",
+                        properties: {
+                            who: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            when: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            where: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            what: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            why: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            how: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                        },
+                    },
+                    kishotenketsu: {
+                        type: "object",
+                        properties: {
+                            ki: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            sho: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            ten: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                            ketsu: {
+                                type: "object",
+                                properties: {
+                                    rating: { type: "number" },
+                                    reason: { type: "string" },
+                                    suggestion: { type: "string" },
+                                },
+                                required: ["rating", "reason", "suggestion"],
+                            },
+                        },
+                    },
+                },
+            },
+            summary: {
+                type: "object",
+                properties: {
+                    overallRating: { type: "number" },
+                    positiveFeedback: { type: "string" },
+                    improvementPoints: { type: "string" },
+                },
+                required: ["overallRating", "positiveFeedback", "improvementPoints"],
+            },
+        },
+    };
+
+    try {
+        const result = await this.provider.generateStructuredResponse(prompt, schema);
+        return result;
+    } catch (error) {
+        console.error("Error generating story structure analysis:", error);
+        throw new Error("物語構成の分析に失敗しました。");
+    }
+}
+
 }
