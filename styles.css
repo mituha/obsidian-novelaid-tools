@@ -74,9 +74,10 @@
 .message {
   padding: 8px 12px;
   border-radius: 18px;
-  max-width: 80%;
+  max-width: 90%;
   word-wrap: break-word;
   white-space: pre-wrap; /* Respect newlines in response */
+  user-select: text; /* テキスト選択を可能にする */
 }
 
 .message.user {
@@ -87,9 +88,10 @@
 }
 
 .message.assistant, .message.assistant-error {
-  background-color: var(--background-secondary);
+  background-color: var(--background-modifier-hover); /* ホバー色を背景にしてコントラストを確保 */
   align-self: flex-start;
   border-bottom-left-radius: 4px;
+  border: 1px solid var(--background-modifier-border-hover); /* 枠線も少し明るい色に */
 }
 
 .message.assistant-error {

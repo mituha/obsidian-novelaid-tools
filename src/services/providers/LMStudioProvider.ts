@@ -111,7 +111,7 @@ export class LMStudioProvider extends BaseAiProvider {
                     type: "json",
                     jsonSchema: schema,
                 },
-                //TODO maxTokens: 1000,
+                maxTokens: 2048, //必要に応じて調整
             });
 
             const content = response.content;
