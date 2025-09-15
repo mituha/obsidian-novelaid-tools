@@ -47,5 +47,28 @@ export class AiOrchestratorService {
 
 
 
+    public generateChatResponse = async (userInput: string, context: string): Promise<string> => {
+        if (!this.provider) {
+            throw new Error("AIプロバイダーが初期化されていません。");
+        }
+        const prompt = `あなたは優秀な文章アシスタントです。
+ユーザーは以下の文章を編集中です
 
+---
+${context}
+---
+
+この文脈を踏まえて、ユーザーの次の質問に日本語で回答してください。
+
+質問: "${userInput}"
+`;
+
+        try {
+            const result = await this.provider.generateChatResponse( [{ role: "user", parts: [{ text: prompt }] }]);
+            return result.parts.map(part => part.text).join('\n') || "AIからの応答が得られませんでした。";
+        } catch (error) {
+            console.error("Error generating chat response from Gemini:", error);
+            throw new Error("AIからの応答の生成に失敗しました。");
+        }
+    };
 }

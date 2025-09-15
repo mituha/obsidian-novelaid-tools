@@ -104,12 +104,15 @@ export class LMStudioProvider extends BaseAiProvider {
     }
 
     async generateStructuredResponse(prompt: string, schema: object): Promise<any> {
-        const jsonPrompt = `${prompt}\n\nレスポンスは以下のJSONスキーマに準拠したJSONオブジェクトのみを生成してください:\n\`\`\`json\n${JSON.stringify(schema, null, 2)}\n\`\`\``;
-
         try {
             const model = await this.getLLMModel(this.client, this.settings);
-            //TODO ツール対応
-            const response = await model!.respond(prompt);
+            const response = await model!.respond(prompt,{
+                structured: {
+                    type: "json",
+                    jsonSchema: schema,
+                },
+                //TODO maxTokens: 1000,
+            });
 
             const content = response.content;
             if (!content) {
@@ -123,6 +126,7 @@ export class LMStudioProvider extends BaseAiProvider {
             throw new Error(`AIからのJSON応答の生成に失敗しました: ${error instanceof Error ? error.message : String(error)}`);
         }
     }
+    
     async generateFunctionResponse(prompt: string, tools?: AiFunction[]): Promise<FWChatMessage> {
         const initialMessage: FWChatMessage = { role: "user", parts: [{ text: prompt }] };
         //TODO ツール対応

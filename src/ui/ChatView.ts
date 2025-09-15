@@ -1,7 +1,8 @@
 import { ItemView, WorkspaceLeaf, MarkdownView, Notice, setIcon, MarkdownRenderer, IconName } from 'obsidian';
 import { NovelaidToolsPluginSettings } from '../novelaidToolsSettings';
-import { generateChatResponse, generateReview, generateProofread, ProofreadResult } from '../services/geminiService';
+import { generateReview, generateProofread, ProofreadResult } from '../services/geminiService';
 import { ObsidianContextService } from '../services/obsidianContextService';
+import NovelaidToolsPlugin from 'src/main';
 
 export const CHAT_VIEW_TYPE = 'novelaid-chat-view';
 
@@ -11,11 +12,13 @@ export class ChatView extends ItemView {
     inputEl: HTMLInputElement;
     sendButton: HTMLButtonElement;
     private contextService: ObsidianContextService;
+    private plugin: NovelaidToolsPlugin
 
-    constructor(leaf: WorkspaceLeaf, settings: NovelaidToolsPluginSettings, contextService: ObsidianContextService) {
+    constructor(leaf: WorkspaceLeaf, plugin: NovelaidToolsPlugin, settings: NovelaidToolsPluginSettings, contextService: ObsidianContextService) {
         super(leaf);
         this.settings = settings;
         this.contextService = contextService;
+        this.plugin = plugin;
     }
 
     getViewType() {
@@ -219,7 +222,7 @@ export class ChatView extends ItemView {
             const notice = new Notice(`AIが応答を生成中です...`, 0);
 
             const editorContent = this.getCurrentContext();
-            const response = await generateChatResponse(message, editorContent);
+            const response = await this.plugin.aiOrchestrator.generateChatResponse(message, editorContent);
             this.updateMessage(thinkingMessage, response, 'assistant');
 
             notice.hide();

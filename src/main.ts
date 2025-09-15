@@ -29,7 +29,7 @@ export default class NovelaidToolsPlugin extends Plugin {
 		// Register the view
 		this.registerView(
 			CHAT_VIEW_TYPE,
-			(leaf) => new ChatView(leaf, this.settings, this.contextService)
+			(leaf) => new ChatView(leaf,this, this.settings, this.contextService)
 		);
 
 		//ルビの表示
