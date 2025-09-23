@@ -3,15 +3,20 @@
 
 ## 現在の作業
 
+- [ ] **ポップアップメニューによるルビ挿入機能の実装**
+    - [ ] `main.ts` に `editor-menu` イベントを追加し、テキスト選択時に「ルビを振る」メニューを表示する。
+    - [ ] `src/ui/` にルビ入力用モーダル `RubyInputModal.ts` を作成する。
+    - [ ] `rubyTextFormatter.ts` に `<ruby>` タグを生成する処理を追加する。
+    - [ ] 選択範囲の文字列をルビ付き書式に置換するロジックを実装する。
+
+## 次回作業予定
+
 - [ ] **物語の構成分析機能の実装**
     - [ ] AIプロンプトとJSONスキーマの設計 (`docs/AIプロンプト仕様書_物語構成分析.md` を作成)
     - [ ] `src/services/AiOrchestratorService.ts` に `analyzeStoryStructure(text: string)` メソッドを追加
     - [ ] `src/main.ts` にコマンド「物語の構成を分析する」を追加
     - [ ] `src/ui/ChatView.ts` に分析結果を整形して表示する機能を追加
     - [ ] `styles.css` に分析結果表示用のスタイルを追加
-
-## 次回作業予定
-
 - [ ] **コンテキスト取得処理のリファクタリング**
     - [ ] `src/services/obsidianContextService.ts` を作成
     - [ ] 既存のコンテキスト取得処理を新サービスに移行

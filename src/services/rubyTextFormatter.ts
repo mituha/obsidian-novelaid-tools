@@ -71,3 +71,14 @@ export function applyRubyToElement(element: HTMLElement): void {
         oldNode.parentNode?.replaceChild(newNode, oldNode);
     });
 }
+
+/**
+ * 親文字とルビ文字からカクヨム記法のルビ文字列を生成します。
+ * @param baseText 親文字となるテキスト
+ * @param rubyText ルビとして振るテキスト
+ * @returns フォーマットされたカクヨム記法の文字列 (例: `|親文字《ルビ》`)
+ */
+export function createRubyKakuyomuFormat(baseText: string, rubyText: string): string {
+    // 親文字に漢字以外が含まれる場合も考慮し、常に`|`を付ける形式で統一する
+    return `|${baseText}《${rubyText}》`;
+}

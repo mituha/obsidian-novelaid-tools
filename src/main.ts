@@ -1,11 +1,12 @@
-import { App, MarkdownView, Modal, Notice, Plugin, TFile, Setting } from 'obsidian';
+import { App, MarkdownView, Modal, Notice, Plugin, TFile, Setting, Editor, MenuItem } from 'obsidian';
 import { NovelaidToolsPluginSettings, DEFAULT_SETTINGS } from './novelaidToolsSettings';
 import { NovelaidToolsSettingsTab } from './novelaidToolsSettingsTab';
 import * as path from 'path';
-import { applyRubyToElement } from './services/rubyTextFormatter';
+import { applyRubyToElement, createRubyKakuyomuFormat } from './services/rubyTextFormatter';
 import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
 import { ObsidianContextService } from './services/obsidianContextService';
 import { AiOrchestratorService } from './services/AiOrchestratorService';
+import { RubyInputModal } from './ui/RubyInputModal';
 
 export default class NovelaidToolsPlugin extends Plugin {
 	settings: NovelaidToolsPluginSettings;
@@ -35,6 +36,29 @@ export default class NovelaidToolsPlugin extends Plugin {
 		this.registerMarkdownPostProcessor((element, context) => {
 			applyRubyToElement(element);
 		});
+
+		// エディタのコンテキストメニューに「ルビを振る」を追加
+		this.registerEvent(
+			this.app.workspace.on('editor-menu', (menu, editor, view) => {
+				// テキストが選択されている場合のみメニュー項目を追加
+				if (editor.somethingSelected()) {
+					menu.addItem((item: MenuItem) => {
+						item
+							.setTitle('ルビを振る')
+							.setIcon('pencil') // お好みでアイコンを変更してください
+							.onClick(() => {
+								const selectedText = editor.getSelection();
+								
+								// ルビ入力モーダルを開く
+								new RubyInputModal(this.app, (rubyText) => {
+									const formattedText = createRubyKakuyomuFormat(selectedText, rubyText);
+									editor.replaceSelection(formattedText);
+								}).open();
+							});
+					});
+				}
+			})
+		);
 	}
 
 	async activateChatView() {
