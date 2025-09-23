@@ -56,20 +56,21 @@ export class AiOrchestratorService {
         if (!this.provider) {
             throw new Error("AIプロバイダーが初期化されていません。");
         }
-        const prompt = `あなたは優秀な文章アシスタントです。
-ユーザーは以下の文章を編集中です
+        const chatHistory: ChatMessage[] = [];
+        const personalityPrompt = `あなたは小説の編集者です。ユーザーの質問に対して、できるだけ簡潔に、しかし十分な情報を提供するよう努めてください。`;
+        chatHistory.push({ role: 'system', parts: [{ text: personalityPrompt }] });
+        const contextPrompt = `以下は、ユーザーが編集中の文章の一部です。この文脈を踏まえて、ユーザーの質問に答えてください。
+        # 原稿
+        ---
+        ${context}
+        ---
+        `;
+        chatHistory.push({ role: 'user', parts: [{ text: contextPrompt }] });
 
----
-${context}
----
-
-この文脈を踏まえて、ユーザーの次の質問に日本語で回答してください。
-
-質問: "${userInput}"
-`;
-
+        const prompt = `# 質問\n${userInput}`;
+        chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
         try {
-            const result = await this.provider.generateChatResponse([{ role: "user", parts: [{ text: prompt }] }]);
+            const result = await this.provider.generateChatResponse(chatHistory);
             return result.parts.map(part => part.text).join('\n') || "AIからの応答が得られませんでした。";
         } catch (error) {
             console.error("Error generating chat response from Gemini:", error);
