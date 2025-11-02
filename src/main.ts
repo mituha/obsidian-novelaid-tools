@@ -4,6 +4,7 @@ import { NovelaidToolsSettingsTab } from './novelaidToolsSettingsTab';
 import * as path from 'path';
 import { applyRubyToElement, createRubyKakuyomuFormat } from './services/rubyTextFormatter';
 import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
+import { CharacterView, CHARACTER_VIEW_TYPE } from './ui/CharacterView';
 import { ObsidianContextService } from './services/obsidianContextService';
 import { AiOrchestratorService } from './services/AiOrchestratorService';
 import { RubyInputModal } from './ui/RubyInputModal';
@@ -23,13 +24,22 @@ export default class NovelaidToolsPlugin extends Plugin {
 			this.activateChatView();
 		});
 
+		// Add a ribbon icon for the character view
+		this.addRibbonIcon('users', 'キャラクタービュー', () => {
+			this.activateCharacterView();
+		});
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new NovelaidToolsSettingsTab(this.app, this));
 
-		// Register the view
+		// Register the views
 		this.registerView(
 			CHAT_VIEW_TYPE,
 			(leaf) => new ChatView(leaf,this, this.settings, this.contextService)
+		);
+		this.registerView(
+			CHARACTER_VIEW_TYPE,
+			(leaf) => new CharacterView(leaf)
 		);
 
 		//ルビの表示
@@ -74,8 +84,22 @@ export default class NovelaidToolsPlugin extends Plugin {
 		);
 	}
 
+	async activateCharacterView() {
+		this.app.workspace.detachLeavesOfType(CHARACTER_VIEW_TYPE);
+
+		await this.app.workspace.getLeftLeaf(false)?.setViewState({
+			type: CHARACTER_VIEW_TYPE,
+			active: true,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(CHARACTER_VIEW_TYPE)[0]
+		);
+	}
+
 	onunload() {
 		this.app.workspace.detachLeavesOfType(CHAT_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(CHARACTER_VIEW_TYPE);
 	}
 
 	async loadSettings() {
