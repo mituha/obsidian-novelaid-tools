@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf, TFile } from "obsidian";
 
-export const GEOGRAPHY_VIEW_TYPE = "geography-view";
+export const GEOGRAPHY_VIEW_TYPE = "novelaid-geography-view";
 export const GEOGRAPHY_VIEW_ICON = "map";
 
 export class GeographyView extends ItemView {
