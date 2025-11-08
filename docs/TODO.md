@@ -11,6 +11,11 @@
     - [ ] `src/main.ts` にコマンド「物語の構成を分析する」を追加
     - [ ] `src/ui/ChatView.ts` に分析結果を整形して表示する機能を追加
     - [ ] `styles.css` に分析結果表示用のスタイルを追加
+- [ ] **地理ビューの実装**
+    - [x] `docs/地理ビュー.md` の作成
+    - [ ] `src/ui/GeographyView.ts` の作成
+    - [ ] `main.ts` に地理ビューを登録する処理を追加
+    - [ ] `styles.css` に地理ビュー用のスタイルを追加
 - [ ] **コンテキスト取得処理のリファクタリング**
     - [ ] `src/services/obsidianContextService.ts` を作成
     - [ ] 既存のコンテキスト取得処理を新サービスに移行
