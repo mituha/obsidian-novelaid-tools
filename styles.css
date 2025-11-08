@@ -187,3 +187,50 @@
 .analysis-item-text {
   color: var(--text-normal);
 }
+
+/* Character View Styles */
+.character-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+}
+
+.character-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.character-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.character-name {
+  font-weight: bold;
+}
+
+/* Geography View Styles */
+.geography-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+}
+
+.geography-item {
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.geography-item:hover {
+  background-color: var(--background-modifier-hover);
+}
+
+.geography-name {
+  font-weight: bold;
+}
+

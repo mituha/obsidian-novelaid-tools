@@ -5,6 +5,7 @@ import * as path from 'path';
 import { applyRubyToElement, createRubyKakuyomuFormat } from './services/rubyTextFormatter';
 import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
 import { CharacterView, CHARACTER_VIEW_TYPE } from './ui/CharacterView';
+import { GeographyView, GEOGRAPHY_VIEW_TYPE } from './ui/GeographyView';
 import { ObsidianContextService } from './services/obsidianContextService';
 import { AiOrchestratorService } from './services/AiOrchestratorService';
 import { RubyInputModal } from './ui/RubyInputModal';
@@ -29,6 +30,11 @@ export default class NovelaidToolsPlugin extends Plugin {
 			this.activateCharacterView();
 		});
 
+		// Add a ribbon icon for the geography view
+		this.addRibbonIcon('map', '地理ビュー', () => {
+			this.activateGeographyView();
+		});
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new NovelaidToolsSettingsTab(this.app, this));
 
@@ -40,6 +46,10 @@ export default class NovelaidToolsPlugin extends Plugin {
 		this.registerView(
 			CHARACTER_VIEW_TYPE,
 			(leaf) => new CharacterView(leaf)
+		);
+		this.registerView(
+			GEOGRAPHY_VIEW_TYPE,
+			(leaf) => new GeographyView(leaf)
 		);
 
 		//ルビの表示
@@ -97,9 +107,23 @@ export default class NovelaidToolsPlugin extends Plugin {
 		);
 	}
 
+	async activateGeographyView() {
+		this.app.workspace.detachLeavesOfType(GEOGRAPHY_VIEW_TYPE);
+
+		await this.app.workspace.getLeftLeaf(false)?.setViewState({
+			type: GEOGRAPHY_VIEW_TYPE,
+			active: true,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(GEOGRAPHY_VIEW_TYPE)[0]
+		);
+	}
+
 	onunload() {
 		this.app.workspace.detachLeavesOfType(CHAT_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(CHARACTER_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(GEOGRAPHY_VIEW_TYPE);
 	}
 
 	async loadSettings() {
