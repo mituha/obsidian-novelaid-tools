@@ -3,9 +3,9 @@ import { NovelaidToolsPluginSettings, DEFAULT_SETTINGS } from './novelaidToolsSe
 import { NovelaidToolsSettingsTab } from './novelaidToolsSettingsTab';
 import * as path from 'path';
 import { applyRubyToElement, createRubyKakuyomuFormat } from './services/rubyTextFormatter';
-import { ChatView, CHAT_VIEW_TYPE } from './ui/ChatView';
-import { CharacterView, CHARACTER_VIEW_TYPE } from './ui/CharacterView';
-import { GeographyView, GEOGRAPHY_VIEW_TYPE } from './ui/GeographyView';
+import { ChatView, CHAT_VIEW_TYPE, CHAT_VIEW_ICON} from './ui/ChatView';
+import { CharacterView, CHARACTER_VIEW_TYPE, CHARACTER_VIEW_ICON} from './ui/CharacterView';
+import { GeographyView, GEOGRAPHY_VIEW_TYPE, GEOGRAPHY_VIEW_ICON} from './ui/GeographyView';
 import { ObsidianContextService } from './services/obsidianContextService';
 import { AiOrchestratorService } from './services/AiOrchestratorService';
 import { RubyInputModal } from './ui/RubyInputModal';
@@ -21,17 +21,17 @@ export default class NovelaidToolsPlugin extends Plugin {
 		this.contextService = new ObsidianContextService(this.app);
 
 		// Add a ribbon icon for the chat view
-		this.addRibbonIcon('message-square', 'AI Chat', () => {
+		this.addRibbonIcon(CHAT_VIEW_ICON, 'AI Chat', () => {
 			this.activateChatView();
 		});
 
 		// Add a ribbon icon for the character view
-		this.addRibbonIcon('users', 'キャラクタービュー', () => {
+		this.addRibbonIcon(CHARACTER_VIEW_ICON, 'キャラクタービュー', () => {
 			this.activateCharacterView();
 		});
 
 		// Add a ribbon icon for the geography view
-		this.addRibbonIcon('map', '地理ビュー', () => {
+		this.addRibbonIcon(GEOGRAPHY_VIEW_ICON, '地理ビュー', () => {
 			this.activateGeographyView();
 		});
 

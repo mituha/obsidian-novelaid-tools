@@ -1,6 +1,7 @@
 import { ItemView, WorkspaceLeaf, TFile } from "obsidian";
 
 export const GEOGRAPHY_VIEW_TYPE = "geography-view";
+export const GEOGRAPHY_VIEW_ICON = "map";
 
 export class GeographyView extends ItemView {
     private geographyListEl: HTMLElement;
@@ -15,6 +16,10 @@ export class GeographyView extends ItemView {
 
     getDisplayText() {
         return "地理ビュー";
+    }
+    
+    getIcon() {
+        return GEOGRAPHY_VIEW_ICON;
     }
 
     async onOpen() {

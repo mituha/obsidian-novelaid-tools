@@ -1,6 +1,7 @@
 import { ItemView, WorkspaceLeaf, TFile } from "obsidian";
 
-export const CHARACTER_VIEW_TYPE = "character-view";
+export const CHARACTER_VIEW_TYPE = "novelaid-character-view";
+export const CHARACTER_VIEW_ICON = "users";
 
 export class CharacterView extends ItemView {
     private characterListEl: HTMLElement;
@@ -16,6 +17,11 @@ export class CharacterView extends ItemView {
     getDisplayText() {
         return "キャラクタービュー";
     }
+
+    getIcon() {
+        return CHARACTER_VIEW_ICON;
+    }
+
 
     async onOpen() {
         const container = this.containerEl.children[1];

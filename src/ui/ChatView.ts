@@ -5,7 +5,7 @@ import NovelaidToolsPlugin from 'src/main';
 import { ProofreadResult } from '../services/AiOrchestratorService';
 
 export const CHAT_VIEW_TYPE = 'novelaid-chat-view';
-
+export const CHAT_VIEW_ICON = 'message-square';
 export class ChatView extends ItemView {
     settings: NovelaidToolsPluginSettings;
     messagesContainer: HTMLElement;
@@ -30,7 +30,7 @@ export class ChatView extends ItemView {
     }
 
     getIcon() {
-        return 'message-square';
+        return CHAT_VIEW_ICON;
     }
 
     async onOpen() {
