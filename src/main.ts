@@ -8,6 +8,7 @@ import { CharacterView, CHARACTER_VIEW_TYPE, CHARACTER_VIEW_ICON} from './ui/Cha
 import { GeographyView, GEOGRAPHY_VIEW_TYPE, GEOGRAPHY_VIEW_ICON} from './ui/GeographyView';
 import { ObsidianContextService } from './services/obsidianContextService';
 import { AiOrchestratorService } from './services/AiOrchestratorService';
+import { DatePickerModal } from './ui/DatePickerModal';
 import { RubyInputModal } from './ui/RubyInputModal';
 
 export default class NovelaidToolsPlugin extends Plugin {
@@ -57,15 +58,50 @@ export default class NovelaidToolsPlugin extends Plugin {
 			applyRubyToElement(element);
 		});
 
-		// エディタのコンテキストメニューに「ルビを振る」を追加
+		// エディタのコンテキストメニューに項目を追加
 		this.registerEvent(
 			this.app.workspace.on('editor-menu', (menu, editor, view) => {
-				// テキストが選択されている場合のみメニュー項目を追加
+				// 「日付を挿入」を追加
+				menu.addItem((item: MenuItem) => {
+					item
+						.setTitle('日付を挿入')
+						.setIcon('calendar-days')
+						.onClick(() => {
+							const selectedText = editor.getSelection();
+							let initialDate: string | undefined = undefined;
+
+							// YYYY-MM-DD または YYYY/MM/DD 形式を優先して抽出
+							let dateMatch = selectedText.match(/\d{4}[-/]\d{1,2}[-/]\d{1,2}/);
+							if (dateMatch) {
+								const parts = dateMatch[0].split(/[-/]/).map(Number);
+								initialDate = `${parts[0]}-${String(parts[1]).padStart(2, '0')}-${String(parts[2]).padStart(2, '0')}`;
+							} else {
+								// YYYY-MM または YYYY/MM 形式を抽出
+								dateMatch = selectedText.match(/\d{4}[-/]\d{1,2}/);
+								if (dateMatch) {
+									const parts = dateMatch[0].split(/[-/]/).map(Number);
+									initialDate = `${parts[0]}-${String(parts[1]).padStart(2, '0')}-01`;
+								} else {
+									// YYYY 形式を抽出
+									dateMatch = selectedText.match(/\d{4}/);
+									if (dateMatch) {
+										initialDate = `${Number(dateMatch[0])}-01-01`;
+									}
+								}
+							}
+
+							new DatePickerModal(this.app, (date) => {
+								editor.replaceSelection(date);
+							}, initialDate).open();
+						});
+				});
+
+				// テキストが選択されている場合のみ「ルビを振る」を追加
 				if (editor.somethingSelected()) {
 					menu.addItem((item: MenuItem) => {
 						item
 							.setTitle('ルビを振る')
-							.setIcon('pencil') // お好みでアイコンを変更してください
+							.setIcon('pencil')
 							.onClick(() => {
 								const selectedText = editor.getSelection();
 								
