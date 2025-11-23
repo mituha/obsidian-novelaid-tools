@@ -49,7 +49,7 @@ export class GeographyView extends ItemView {
 
     private async loadGeographies() {
         this.geographyListEl.empty();
-        const geographyTags = ['Geography', '地理', '地名', 'Geo']; // 固定タグ
+        const geographyTags = ['Geography', '地理', '地名', 'Geo', 'places']; // 固定タグ
 
         const markdownFiles = this.app.vault.getMarkdownFiles();
         const geographies: TFile[] = [];
