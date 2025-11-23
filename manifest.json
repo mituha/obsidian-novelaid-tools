@@ -1,8 +1,8 @@
 {
 	"id": "obsidian-novelaid-tools",
 	"name": "Novelaid Tools",
-	"version": "0.11.1",
-	"minAppVersion": "1.5.11",
+	"version": "0.12.0",
+	"minAppVersion": "1.10.2",
 	"description": "小説の執筆を支援するツール",
 	"author": "Mituha Mizuki",
 	"authorUrl": "https://github.com/mituha",

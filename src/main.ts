@@ -6,6 +6,7 @@ import { applyRubyToElement, createRubyKakuyomuFormat } from './services/rubyTex
 import { ChatView, CHAT_VIEW_TYPE, CHAT_VIEW_ICON} from './ui/ChatView';
 import { CharacterView, CHARACTER_VIEW_TYPE, CHARACTER_VIEW_ICON} from './ui/CharacterView';
 import { GeographyView, GEOGRAPHY_VIEW_TYPE, GEOGRAPHY_VIEW_ICON} from './ui/GeographyView';
+import { PlotView, PLOT_VIEW_TYPE, PLOT_VIEW_ICON } from './ui/PlotView';
 import { ObsidianContextService } from './services/obsidianContextService';
 import { AiOrchestratorService } from './services/AiOrchestratorService';
 import { DatePickerModal } from './ui/DatePickerModal';
@@ -36,6 +37,11 @@ export default class NovelaidToolsPlugin extends Plugin {
 			this.activateGeographyView();
 		});
 
+		// Add a ribbon icon for the plot view
+		this.addRibbonIcon(PLOT_VIEW_ICON, 'プロットビュー', () => {
+			this.activatePlotView();
+		});
+
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new NovelaidToolsSettingsTab(this.app, this));
 
@@ -51,6 +57,10 @@ export default class NovelaidToolsPlugin extends Plugin {
 		this.registerView(
 			GEOGRAPHY_VIEW_TYPE,
 			(leaf) => new GeographyView(leaf)
+		);
+		this.registerView(
+			PLOT_VIEW_TYPE,
+			(leaf) => new PlotView(leaf)
 		);
 
 		//ルビの表示
@@ -156,10 +166,24 @@ export default class NovelaidToolsPlugin extends Plugin {
 		);
 	}
 
+	async activatePlotView() {
+		this.app.workspace.detachLeavesOfType(PLOT_VIEW_TYPE);
+
+		await this.app.workspace.getLeftLeaf(false)?.setViewState({
+			type: PLOT_VIEW_TYPE,
+			active: true,
+		});
+
+		this.app.workspace.revealLeaf(
+			this.app.workspace.getLeavesOfType(PLOT_VIEW_TYPE)[0]
+		);
+	}
+
 	onunload() {
 		this.app.workspace.detachLeavesOfType(CHAT_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(CHARACTER_VIEW_TYPE);
 		this.app.workspace.detachLeavesOfType(GEOGRAPHY_VIEW_TYPE);
+		this.app.workspace.detachLeavesOfType(PLOT_VIEW_TYPE);
 	}
 
 	async loadSettings() {
